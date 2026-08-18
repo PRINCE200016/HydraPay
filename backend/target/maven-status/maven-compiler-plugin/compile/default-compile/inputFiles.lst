@@ -3,13 +3,16 @@ E:\HydraPay\backend\src\main\java\com\hydrapay\ledger\dto\TransferResponse.java
 E:\HydraPay\backend\src\main\java\com\hydrapay\ledger\repository\LedgerEntryRepository.java
 E:\HydraPay\backend\src\main\java\com\hydrapay\ledger\exception\GlobalExceptionHandler.java
 E:\HydraPay\backend\src\main\java\com\hydrapay\ledger\dto\AccountResponse.java
+E:\HydraPay\backend\src\main\java\com\hydrapay\ledger\security\CorrelationIdFilter.java
 E:\HydraPay\backend\src\main\java\com\hydrapay\ledger\domain\enums\IdempotencyStatus.java
 E:\HydraPay\backend\src\main\java\com\hydrapay\ledger\repository\AccountRepository.java
 E:\HydraPay\backend\src\main\java\com\hydrapay\ledger\service\LedgerService.java
 E:\HydraPay\backend\src\main\java\com\hydrapay\ledger\exception\AccountNotFoundException.java
 E:\HydraPay\backend\src\main\java\com\hydrapay\ledger\domain\enums\AccountStatus.java
 E:\HydraPay\backend\src\main\java\com\hydrapay\ledger\exception\IdempotencyConflictException.java
+E:\HydraPay\backend\src\main\java\com\hydrapay\ledger\security\SecurityConfig.java
 E:\HydraPay\backend\src\main\java\com\hydrapay\ledger\domain\entity\IdempotencyRecord.java
+E:\HydraPay\backend\src\main\java\com\hydrapay\ledger\security\AuditLoggerService.java
 E:\HydraPay\backend\src\main\java\com\hydrapay\ledger\service\OutboxPublisherService.java
 E:\HydraPay\backend\src\main\java\com\hydrapay\ledger\service\ReconciliationService.java
 E:\HydraPay\backend\src\main\java\com\hydrapay\ledger\dto\TransferRequest.java
@@ -25,7 +28,9 @@ E:\HydraPay\backend\src\main\java\com\hydrapay\ledger\service\AccountService.jav
 E:\HydraPay\backend\src\main\java\com\hydrapay\ledger\domain\entity\LedgerTransaction.java
 E:\HydraPay\backend\src\main\java\com\hydrapay\ledger\repository\LedgerTransactionRepository.java
 E:\HydraPay\backend\src\main\java\com\hydrapay\ledger\controller\AccountController.java
+E:\HydraPay\backend\src\main\java\com\hydrapay\ledger\security\RateLimitingFilter.java
 E:\HydraPay\backend\src\main\java\com\hydrapay\ledger\dto\LedgerStatsResponse.java
+E:\HydraPay\backend\src\main\java\com\hydrapay\ledger\security\RateLimiterService.java
 E:\HydraPay\backend\src\main\java\com\hydrapay\ledger\domain\enums\EntryType.java
 E:\HydraPay\backend\src\main\java\com\hydrapay\ledger\service\IdempotencyService.java
 E:\HydraPay\backend\src\main\java\com\hydrapay\ledger\domain\entity\LedgerEntry.java

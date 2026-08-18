@@ -118,6 +118,7 @@ curl -X POST http://localhost:8080/api/v1/transfers \
 ## Documentation Suite
 
 - [System Architecture & Topology](file:///e:/HydraPay/docs/SYSTEM_ARCHITECTURE.md)
+- [Production Security & API Hardening](file:///e:/HydraPay/docs/SECURITY.md)
 - [REST API Specification](file:///e:/HydraPay/docs/API_DOCUMENTATION.md)
 - [Database ERD & Double-Entry Math](file:///e:/HydraPay/docs/DATABASE_DESIGN.md)
 - [Failure Scenarios & Fault Matrix](file:///e:/HydraPay/docs/FAILURE_SCENARIOS.md)

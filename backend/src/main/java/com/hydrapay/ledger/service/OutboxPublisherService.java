@@ -44,27 +44,32 @@ public class OutboxPublisherService {
             return;
         }
 
-        log.info("Outbox Worker polling found {} pending event(s) to publish (batch size: {})", pendingEvents.size(), batchSize);
+        log.info("Outbox Worker polling found {} pending event(s) to publish (batch size: {})", pendingEvents.size(),
+                batchSize);
 
         List<CompletableFuture<Void>> futures = new ArrayList<>();
 
         for (OutboxEvent event : pendingEvents) {
             try {
-                CompletableFuture<Void> future = kafkaTemplate.send(KAFKA_TOPIC_LEDGER, event.getAggregateId(), event.getPayload())
+                CompletableFuture<Void> future = kafkaTemplate
+                        .send(KAFKA_TOPIC_LEDGER, event.getAggregateId(), event.getPayload())
                         .thenAccept(result -> {
                             event.setStatus(OutboxStatus.PUBLISHED);
                             event.setPublishedAt(OffsetDateTime.now());
-                            log.debug("Kafka Outbox PUBLISHED: eventId={}, aggregateId={}", event.getId(), event.getAggregateId());
+                            log.debug("Kafka Outbox PUBLISHED: eventId={}, aggregateId={}", event.getId(),
+                                    event.getAggregateId());
                         })
                         .exceptionally(ex -> {
                             int nextRetry = (event.getRetryCount() == null ? 0 : event.getRetryCount()) + 1;
                             event.setRetryCount(nextRetry);
                             if (nextRetry >= maxRetries) {
                                 event.setStatus(OutboxStatus.FAILED);
-                                log.error("Kafka Outbox PERMANENT FAILURE: eventId={}, max retries reached", event.getId(), ex);
+                                log.error("Kafka Outbox PERMANENT FAILURE: eventId={}, max retries reached",
+                                        event.getId(), ex);
                             } else {
                                 event.setStatus(OutboxStatus.PENDING);
-                                log.warn("Kafka Outbox PUBLISH RETRY (attempt {}/{}): eventId={}", nextRetry, maxRetries, event.getId(), ex);
+                                log.warn("Kafka Outbox PUBLISH RETRY (attempt {}/{}): eventId={}", nextRetry,
+                                        maxRetries, event.getId(), ex);
                             }
                             return null;
                         });
@@ -84,7 +89,8 @@ public class OutboxPublisherService {
                 CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
                         .get(10, TimeUnit.SECONDS);
             } catch (Exception e) {
-                log.warn("Timed out or interrupted waiting for outbox batch Kafka sends to complete: {}", e.getMessage());
+                log.warn("Timed out or interrupted waiting for outbox batch Kafka sends to complete: {}",
+                        e.getMessage());
             }
         }
 
@@ -96,4 +102,3 @@ public class OutboxPublisherService {
         }
     }
 }
-

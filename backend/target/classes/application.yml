@@ -60,6 +60,14 @@ spring:
       retries: 3
 
 hydrapay:
+  security:
+    enabled: true
+    allowed-origins:
+      - http://localhost:3000
+  rate-limit:
+    enabled: true
+    requests-per-second: 100
+    burst: 200
   idempotency:
     ttl-seconds: 86400 # 24 hours
   outbox:

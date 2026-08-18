@@ -62,6 +62,14 @@ public class IdempotencyService {
         Optional<IdempotencyRecord> dbRecordOpt = idempotencyRepository.findByIdempotencyKey(idempotencyKey);
         if (dbRecordOpt.isPresent()) {
             IdempotencyRecord dbRecord = dbRecordOpt.get();
+
+            // Payload Conflict Check: Same key with different payload
+            if (dbRecord.getRequestHash() != null && !dbRecord.getRequestHash().equals(requestPayloadHash)) {
+                log.warn("Idempotency PAYLOAD CONFLICT: key={} registered hash={}, current hash={}",
+                        idempotencyKey, dbRecord.getRequestHash(), requestPayloadHash);
+                throw new IdempotencyConflictException("Idempotency key reuse conflict: Key '" + idempotencyKey + "' was previously used with a different request payload.");
+            }
+
             if (dbRecord.getStatus() == IdempotencyStatus.IN_PROGRESS) {
                 throw new IdempotencyConflictException("Transaction currently processing in DB for key: " + idempotencyKey);
             } else if (dbRecord.getStatus() == IdempotencyStatus.COMPLETED && dbRecord.getResponsePayload() != null) {

@@ -1,4 +1,4 @@
-# Created at 2026-08-18T11:16:27.966
+# Created at 2026-08-18T11:33:03.943
 Boot Manifest-JAR contains absolute paths in classpath 'E:\HydraPay\backend\target\test-classes'
 Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
 'other' has different root
