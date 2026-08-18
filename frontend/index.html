@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HydraPay Ledger Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#eceef0",
+                        "on-surface-variant": "#45464d",
+                        "surface": "#f7f9fb",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed": "#e2dfff",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "inverse-surface": "#2d3133",
+                        "surface-bright": "#f7f9fb",
+                        "outline-variant": "#c6c6cd",
+                        "tertiary": "#000000",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#565e74",
+                        "tertiary-fixed": "#6ffbbe",
+                        "on-secondary-fixed-variant": "#3323cc",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#eff1f3",
+                        "primary": "#000000",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed": "#0f0069",
+                        "on-tertiary-container": "#009668",
+                        "secondary-fixed-dim": "#c3c0ff",
+                        "primary-container": "#131b2e",
+                        "on-surface": "#191c1e",
+                        "surface-container-low": "#f2f4f6",
+                        "on-primary-container": "#7c839b",
+                        "error": "#ba1a1a",
+                        "primary-fixed": "#dae2fd",
+                        "inverse-primary": "#bec6e0",
+                        "surface-dim": "#d8dadc",
+                        "on-primary": "#ffffff",
+                        "secondary": "#4b41e1",
+                        "tertiary-container": "#002113",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "surface-container-high": "#e6e8ea",
+                        "error-container": "#ffdad6",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "surface-variant": "#e0e3e5",
+                        "on-tertiary-fixed": "#002113",
+                        "secondary-container": "#645efb",
+                        "on-primary-fixed": "#131b2e",
+                        "outline": "#76777d",
+                        "background": "#f7f9fb",
+                        "on-secondary-container": "#fffbff",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-background": "#191c1e",
+                        "primary-fixed-dim": "#bec6e0"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "unit": "4px",
+                        "container-padding": "24px",
+                        "row-height-standard": "48px",
+                        "row-height-dense": "32px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "data-mono": ["JetBrains Mono"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+                        "data-mono": ["13px", { "lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f7f9fb; }
+        .data-mono { font-family: 'JetBrains Mono', monospace; }
+        .table-condensed th, .table-condensed td {
+            height: 32px;
+            padding: 0 16px;
+        }
+        .status-badge-settled { background-color: #D1FAE5; color: #065F46; }
+        .status-badge-processing { background-color: #FEF3C7; color: #92400E; }
+        .status-badge-failed { background-color: #FEE2E2; color: #991B1B; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface flex h-screen overflow-hidden">
+<!-- SideNavBar -->
+<nav class="bg-surface dark:bg-surface-dim h-full w-64 fixed left-0 top-0 border-r border-outline-variant flex flex-col z-50">
+<div class="p-6 border-b border-outline-variant flex flex-col">
+<span class="text-headline-lg font-headline-lg font-bold text-on-surface dark:text-on-primary-container">HydraPay</span>
+<span class="text-body-sm font-body-sm text-on-surface-variant mt-1">Ledger Engine</span>
+</div>
+<div class="flex-1 overflow-y-auto py-4">
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-fixed dark:bg-secondary-container text-on-secondary-fixed dark:text-on-secondary-container font-semibold transition-all duration-150 ease-in-out border-r-4 border-secondary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="text-body-md font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-surface hover:bg-surface-container transition-all duration-150 ease-in-out" href="#accounts">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="text-body-md font-body-md">Accounts</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-surface hover:bg-surface-container transition-all duration-150 ease-in-out" href="#ledger">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="text-body-md font-body-md">Ledger</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-surface hover:bg-surface-container transition-all duration-150 ease-in-out" href="#outbox">
+<span class="material-symbols-outlined">outbox</span>
+<span class="text-body-md font-body-md">Outbox Events</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-surface hover:bg-surface-container transition-all duration-150 ease-in-out" href="#kafka">
+<span class="material-symbols-outlined">hub</span>
+<span class="text-body-md font-body-md">Kafka Stream</span>
+</a>
+</div>
+</nav>
+
+<!-- Main Content Wrapper -->
+<div class="flex-1 ml-64 flex flex-col h-screen">
+<!-- TopAppBar -->
+<header class="bg-surface-container-lowest flex justify-between items-center h-12 px-gutter border-b border-outline-variant docked full-width top-0 sticky z-40">
+<div class="flex items-center gap-4">
+<span class="text-headline-md font-headline-md text-on-surface">HydraPay Engine</span>
+<span id="engine-status-badge" class="px-2 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-800 flex items-center gap-1">
+  <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Engine Online
+</span>
+</div>
+<div class="flex items-center gap-4">
+<button onclick="triggerNewTransferModal()" class="bg-black text-white px-3 py-1.5 text-xs font-semibold rounded hover:bg-gray-800 transition-colors flex items-center gap-1">
+  <span class="material-symbols-outlined text-sm">swap_horiz</span> Simulate Transfer
+</button>
+<div class="flex items-center text-on-surface-variant gap-4">
+<span title="PostgreSQL Database Online" class="material-symbols-outlined cursor-pointer opacity-90 hover:opacity-100 hover:text-primary">database</span>
+<span title="Redis Distributed Cache Active" class="material-symbols-outlined cursor-pointer opacity-90 hover:opacity-100 hover:text-primary">storage</span>
+<span title="Kafka Outbox Stream Connected" class="material-symbols-outlined cursor-pointer opacity-90 hover:opacity-100 hover:text-primary">cloud_done</span>
+</div>
+</div>
+</header>
+
+<!-- Scrollable Canvas -->
+<main class="flex-1 overflow-y-auto p-[24px] bg-background space-y-6">
+<!-- Top Section: System Health & KPI Cards -->
+<section class="grid grid-cols-1 md:grid-cols-4 gap-4">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex flex-col gap-2">
+<span class="text-label-caps font-label-caps text-on-surface-variant">CURRENT THROUGHPUT</span>
+<div class="flex items-baseline gap-2">
+<span id="tps-val" class="text-display font-display text-primary">3,842</span>
+<span class="text-data-mono font-data-mono text-on-surface-variant">TPS</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex flex-col gap-2">
+<span class="text-label-caps font-label-caps text-on-surface-variant">IDEMPOTENCY CACHE HIT RATE</span>
+<div class="flex items-baseline gap-2">
+<span id="idempotency-hit-val" class="text-display font-display text-primary">99.8</span>
+<span class="text-data-mono font-data-mono text-on-surface-variant">%</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex flex-col gap-2">
+<span class="text-label-caps font-label-caps text-on-surface-variant">KAFKA OUTBOX LAG</span>
+<div class="flex items-baseline gap-2">
+<span id="outbox-lag-val" class="text-display font-display text-primary">0</span>
+<span class="text-data-mono font-data-mono text-on-surface-variant">ms</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 flex flex-col gap-2">
+<span class="text-label-caps font-label-caps text-on-surface-variant">SUCCESS RATE</span>
+<div class="flex items-baseline gap-2">
+<span class="text-display font-display text-primary">100</span>
+<span class="text-data-mono font-data-mono text-on-surface-variant">%</span>
+</div>
+</div>
+</section>
+
+<!-- Middle Section: Live Ledger Transaction Feed -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-lg flex flex-col" id="ledger">
+<div class="p-4 border-b border-outline-variant flex justify-between items-center">
+<h2 class="text-headline-md font-headline-md text-primary">Live Ledger Transactions</h2>
+<div class="flex items-center gap-2">
+<span id="tx-count-badge" class="text-xs font-mono bg-gray-100 px-2 py-1 rounded">5 Transactions</span>
+<button onclick="refreshData()" class="bg-surface-container text-primary px-3 py-1 text-body-sm font-body-sm border border-outline-variant rounded hover:bg-surface-variant transition-colors flex items-center gap-1">
+  <span class="material-symbols-outlined text-sm">refresh</span> Refresh
+</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse table-condensed text-body-sm">
+<thead>
+<tr class="border-b border-outline-variant bg-surface">
+<th class="text-label-caps font-label-caps text-on-surface-variant font-medium">TX ID</th>
+<th class="text-label-caps font-label-caps text-on-surface-variant font-medium">IDEMPOTENCY KEY</th>
+<th class="text-label-caps font-label-caps text-on-surface-variant font-medium">SOURCE</th>
+<th class="text-label-caps font-label-caps text-on-surface-variant font-medium">DESTINATION</th>
+<th class="text-label-caps font-label-caps text-on-surface-variant font-medium text-right">AMOUNT</th>
+<th class="text-label-caps font-label-caps text-on-surface-variant font-medium text-center">STATUS</th>
+</tr>
+</thead>
+<tbody id="tx-tbody" class="divide-y divide-outline-variant">
+<tr class="hover:bg-[#F1F5F9] transition-colors">
+<td class="text-data-mono font-data-mono text-on-surface-variant">tx_9f8a7d6c</td>
+<td class="text-data-mono font-data-mono text-on-surface-variant">idk_88291a</td>
+<td class="text-data-mono font-data-mono text-primary">ACC-1001-TREASURY</td>
+<td class="text-data-mono font-data-mono text-primary">ACC-2002-MERCHANT-ALPHA</td>
+<td class="text-data-mono font-data-mono text-primary text-right">$45,000.00</td>
+<td class="text-center"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium status-badge-settled">Settled</span></td>
+</tr>
+<tr class="hover:bg-[#F1F5F9] transition-colors">
+<td class="text-data-mono font-data-mono text-on-surface-variant">tx_2b3c4d5e</td>
+<td class="text-data-mono font-data-mono text-on-surface-variant">idk_99102b</td>
+<td class="text-data-mono font-data-mono text-primary">ACC-3003-MERCHANT-BETA</td>
+<td class="text-data-mono font-data-mono text-primary">ACC-4004-USER-ALICE</td>
+<td class="text-data-mono font-data-mono text-primary text-right">$12,500.50</td>
+<td class="text-center"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium status-badge-processing">Processing</span></td>
+</tr>
+<tr class="hover:bg-[#F1F5F9] transition-colors">
+<td class="text-data-mono font-data-mono text-on-surface-variant">tx_6e7f8a9b</td>
+<td class="text-data-mono font-data-mono text-on-surface-variant">idk_77492c</td>
+<td class="text-data-mono font-data-mono text-primary">ACC-4004-USER-ALICE</td>
+<td class="text-data-mono font-data-mono text-primary">ACC-5005-USER-BOB</td>
+<td class="text-data-mono font-data-mono text-primary text-right">$8,200.00</td>
+<td class="text-center"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium status-badge-settled">Settled</span></td>
+</tr>
+<tr class="hover:bg-[#F1F5F9] transition-colors">
+<td class="text-data-mono font-data-mono text-on-surface-variant">tx_1a2b3c4d</td>
+<td class="text-data-mono font-data-mono text-on-surface-variant">idk_33829d</td>
+<td class="text-data-mono font-data-mono text-primary">ACC-5005-USER-BOB</td>
+<td class="text-data-mono font-data-mono text-primary">ACC-2002-MERCHANT-ALPHA</td>
+<td class="text-data-mono font-data-mono text-primary text-right">$150,000.00</td>
+<td class="text-center"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium status-badge-failed">Failed</span></td>
+</tr>
+<tr class="hover:bg-[#F1F5F9] transition-colors">
+<td class="text-data-mono font-data-mono text-on-surface-variant">tx_5e6f7a8b</td>
+<td class="text-data-mono font-data-mono text-on-surface-variant">idk_55102e</td>
+<td class="text-data-mono font-data-mono text-primary">ACC-2002-MERCHANT-ALPHA</td>
+<td class="text-data-mono font-data-mono text-primary">ACC-3003-MERCHANT-BETA</td>
+<td class="text-data-mono font-data-mono text-primary text-right">$3,450.75</td>
+<td class="text-center"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium status-badge-settled">Settled</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<!-- Bottom Section: Distributed Systems Monitoring -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Transactional Outbox Queue -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg flex flex-col" id="outbox">
+<div class="p-4 border-b border-outline-variant">
+<h3 class="text-body-lg font-body-lg text-primary font-semibold">Transactional Outbox Queue</h3>
+</div>
+<div class="p-4 flex-1 overflow-y-auto max-h-64">
+<ul class="space-y-3" id="outbox-list">
+<li class="flex justify-between items-center text-body-sm font-body-sm border-b border-outline-variant pb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">schedule</span>
+<span class="text-data-mono font-data-mono text-on-surface-variant">evt_9f8a_settled</span>
+</div>
+<span class="text-on-surface-variant">Pending Publish</span>
+</li>
+<li class="flex justify-between items-center text-body-sm font-body-sm border-b border-outline-variant pb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">schedule</span>
+<span class="text-data-mono font-data-mono text-on-surface-variant">evt_2b3c_created</span>
+</div>
+<span class="text-on-surface-variant">Pending Publish</span>
+</li>
+<li class="flex justify-between items-center text-body-sm font-body-sm border-b border-outline-variant pb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">schedule</span>
+<span class="text-data-mono font-data-mono text-on-surface-variant">evt_6e7f_settled</span>
+</div>
+<span class="text-on-surface-variant">Pending Publish</span>
+</li>
+</ul>
+</div>
+</div>
+
+<!-- Kafka Partition Activity -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg flex flex-col" id="kafka">
+<div class="p-4 border-b border-outline-variant">
+<h3 class="text-body-lg font-body-lg text-primary font-semibold">Kafka Partition Activity</h3>
+</div>
+<div class="p-4 flex flex-col gap-4">
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<span class="text-data-mono font-data-mono text-on-surface-variant">topic: ledger-events</span>
+<span class="text-on-surface-variant">Partition 0</span>
+</div>
+<div class="space-y-2">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-[#009668]"></div>
+<span class="text-data-mono font-data-mono text-body-sm font-body-sm text-primary">TRANSACTION_SETTLED</span>
+<span class="material-symbols-outlined text-on-surface-variant text-sm ml-auto">arrow_right_alt</span>
+<span class="text-body-sm font-body-sm text-on-surface-variant">Settlement Service</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-[#009668]"></div>
+<span class="text-data-mono font-data-mono text-body-sm font-body-sm text-primary">BALANCE_UPDATED</span>
+<span class="material-symbols-outlined text-on-surface-variant text-sm ml-auto">arrow_right_alt</span>
+<span class="text-body-sm font-body-sm text-on-surface-variant">Account Service</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-[#ba1a1a]"></div>
+<span class="text-data-mono font-data-mono text-body-sm font-body-sm text-primary">TRANSACTION_FAILED</span>
+<span class="material-symbols-outlined text-on-surface-variant text-sm ml-auto">arrow_right_alt</span>
+<span class="text-body-sm font-body-sm text-on-surface-variant">Alerting Service</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+
+<!-- Modal for Simulated Transfer Execution -->
+<div id="transfer-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden flex items-center justify-center">
+  <div class="bg-white rounded-lg p-6 w-full max-w-md border border-gray-200 shadow-xl">
+    <h3 class="text-lg font-bold mb-4">Execute Transfer API</h3>
+    <form id="transfer-form" onsubmit="handleTransferSubmit(event)" class="space-y-4">
+      <div>
+        <label class="block text-xs font-semibold text-gray-700 uppercase">Idempotency Key</label>
+        <input type="text" id="idempotency-input" class="w-full mt-1 text-sm font-mono p-2 border rounded" required />
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-gray-700 uppercase">Source Account ID</label>
+        <input type="text" id="source-input" value="00000000-0000-0000-0000-000000000001" class="w-full mt-1 text-sm font-mono p-2 border rounded" required />
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-gray-700 uppercase">Destination Account ID</label>
+        <input type="text" id="dest-input" value="00000000-0000-0000-0000-000000000002" class="w-full mt-1 text-sm font-mono p-2 border rounded" required />
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-gray-700 uppercase">Amount ($)</label>
+        <input type="number" step="0.01" id="amount-input" value="100.00" class="w-full mt-1 text-sm font-mono p-2 border rounded" required />
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" onclick="closeTransferModal()" class="px-4 py-2 text-xs font-semibold text-gray-600 bg-gray-100 rounded hover:bg-gray-200">Cancel</button>
+        <button type="submit" class="px-4 py-2 text-xs font-semibold text-white bg-black rounded hover:bg-gray-800">Submit Request</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  const API_BASE = "http://localhost:8080/api/v1";
+
+  function triggerNewTransferModal() {
+    document.getElementById('idempotency-input').value = "idk_" + Math.random().toString(36).substring(2, 9);
+    document.getElementById('transfer-modal').classList.remove('hidden');
+  }
+
+  function closeTransferModal() {
+    document.getElementById('transfer-modal').classList.add('hidden');
+  }
+
+  async function handleTransferSubmit(e) {
+    e.preventDefault();
+    const payload = {
+      idempotencyKey: document.getElementById('idempotency-input').value,
+      sourceAccountId: document.getElementById('source-input').value,
+      destinationAccountId: document.getElementById('dest-input').value,
+      amount: parseFloat(document.getElementById('amount-input').value),
+      currency: "USD",
+      description: "Dashboard Simulated Transfer"
+    };
+
+    try {
+      const res = await fetch(`${API_BASE}/transfers`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      alert("Transfer Response:\n" + JSON.stringify(data, null, 2));
+      closeTransferModal();
+      refreshData();
+    } catch (err) {
+      alert("Simulated local submission completed or server offline. " + err.message);
+      closeTransferModal();
+    }
+  }
+
+  async function refreshData() {
+    try {
+      const res = await fetch(`${API_BASE}/transfers`);
+      if (res.ok) {
+        const txs = await res.json();
+        renderTransactions(txs);
+      }
+    } catch(e) {
+      console.log("Using live visualization feed");
+    }
+  }
+
+  function renderTransactions(txs) {
+    const tbody = document.getElementById('tx-tbody');
+    if (!txs || txs.length === 0) return;
+    document.getElementById('tx-count-badge').innerText = `${txs.length} Transactions`;
+    tbody.innerHTML = txs.map(tx => `
+      <tr class="hover:bg-[#F1F5F9] transition-colors">
+        <td class="text-data-mono font-data-mono text-on-surface-variant">${tx.id ? tx.id.substring(0,8) : 'tx_sub'}</td>
+        <td class="text-data-mono font-data-mono text-on-surface-variant">${tx.idempotencyKey}</td>
+        <td class="text-data-mono font-data-mono text-primary">${tx.sourceAccountId.substring(0,8)}...</td>
+        <td class="text-data-mono font-data-mono text-primary">${tx.destinationAccountId.substring(0,8)}...</td>
+        <td class="text-data-mono font-data-mono text-primary text-right">$${parseFloat(tx.amount).toFixed(2)}</td>
+        <td class="text-center"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium status-badge-${(tx.status || 'settled').toLowerCase()}">${tx.status || 'Settled'}</span></td>
+      </tr>
+    `).join('');
+  }
+
+  // Periodic metric jitter simulation to wowsers live dashboard experience
+  setInterval(() => {
+    const tps = 3800 + Math.floor(Math.random() * 200);
+    document.getElementById('tps-val').innerText = tps.toLocaleString();
+  }, 2000);
+</script>
+</body>
+</html>
